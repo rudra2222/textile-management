@@ -1,5 +1,7 @@
 import express from "express";
 import protect from "../middleware/authMiddleware.js";
+import authorizeRoles from "../middleware/roleMiddleware.js";
+
 import {
   createExpense,
   getExpenses,
@@ -10,9 +12,9 @@ import {
 
 const router = express.Router();
 
-router.post("/", protect, createExpense);
-router.get("/", protect, getExpenses);
-router.put("/:id", protect, updateExpense);
-router.delete("/:id", protect, deleteExpense);
+router.post("/", protect, authorizeRoles("Owner", "Accountant"), createExpense);
+router.get("/", protect, authorizeRoles("Owner", "Manager", "Accountant"), getExpenses);
+router.put("/:id", protect, authorizeRoles("Owner", "Accountant"), updateExpense);
+router.delete("/:id", protect, authorizeRoles("Owner"), deleteExpense);
 
 export default router;
